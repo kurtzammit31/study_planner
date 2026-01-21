@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'screens/sessions_home_screen.dart';
 
 void main() {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const StudyPlannerApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class StudyPlannerApp extends StatelessWidget {
+  const StudyPlannerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MaterialApp(
+      title: 'Study Planner',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorSchemeSeed: Colors.indigo,
       ),
+      home: const SessionsHomeScreen(),
     );
   }
 }
