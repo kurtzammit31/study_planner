@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/sessions.provide.dart';
 import 'add_session_screen.dart';
 import 'session_details_screen.dart';
 
@@ -7,19 +10,11 @@ class SessionsHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dummy session (Step 3 will replace with Provider + Hive)
-    final demoSession = {
-      "id": "s1",
-      "title": "Database Revision",
-      "subject": "Databases",
-      "dateTime": DateTime.now().add(const Duration(hours: 2)),
-      "duration": 60,
-    };
+    final provider = context.watch<SessionsProvider>();
+    final sessions = provider.sessions;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Study Planner'),
-      ),
+      appBar: AppBar(title: const Text('Study Planner')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
@@ -28,31 +23,28 @@ class SessionsHomeScreen extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
-      body: ListView(
+      body: ListView.builder(
         padding: const EdgeInsets.all(12),
-        children: [
-          Card(
+        itemCount: sessions.length,
+        itemBuilder: (context, index) {
+          final s = sessions[index];
+
+          return Card(
             child: ListTile(
-              title: Text(demoSession["title"] as String),
-              subtitle: Text(
-                "${demoSession["subject"]} • ${(demoSession["dateTime"] as DateTime).toLocal()}",
-              ),
+              leading: Icon(s.isCompleted ? Icons.check_circle : Icons.school),
+              title: Text(s.title),
+              subtitle: Text("${s.subject} • ${s.dateTime.toLocal()}"),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => SessionDetailsScreen(
-                      title: demoSession["title"] as String,
-                      subject: demoSession["subject"] as String,
-                      dateTime: demoSession["dateTime"] as DateTime,
-                      durationMinutes: demoSession["duration"] as int,
-                    ),
+                    builder: (_) => SessionDetailsScreen(sessionId: s.id),
                   ),
                 );
               },
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

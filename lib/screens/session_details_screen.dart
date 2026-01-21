@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/sessions.provide.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
-  const SessionDetailsScreen({
-    super.key,
-    required this.title,
-    required this.subject,
-    required this.dateTime,
-    required this.durationMinutes,
-  });
+  const SessionDetailsScreen({super.key, required this.sessionId});
 
-  final String title;
-  final String subject;
-  final DateTime dateTime;
-  final int durationMinutes;
+  final String sessionId;
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<SessionsProvider>();
+    final s = provider.getById(sessionId);
+
     return Scaffold(
       appBar: AppBar(title: const Text("Session Details")),
       body: Padding(
@@ -27,21 +24,20 @@ class SessionDetailsScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: Theme.of(context).textTheme.titleLarge),
+                Text(s.title, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
-                Text("Subject: $subject"),
-                Text("Time: ${dateTime.toLocal()}"),
-                Text("Duration: $durationMinutes minutes"),
+                Text("Subject: ${s.subject}"),
+                Text("Time: ${s.dateTime.toLocal()}"),
+                Text("Duration: ${s.durationMinutes} minutes"),
+                if (s.notes != null) ...[
+                  const SizedBox(height: 8),
+                  Text("Notes: ${s.notes}"),
+                ],
                 const SizedBox(height: 16),
                 FilledButton.icon(
-                  onPressed: () {
-                    // Step 3: mark complete in Provider + Hive
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Marked completed (dummy)")),
-                    );
-                  },
-                  icon: const Icon(Icons.check),
-                  label: const Text("Mark Completed"),
+                  onPressed: () => provider.toggleCompleted(sessionId),
+                  icon: Icon(s.isCompleted ? Icons.undo : Icons.check),
+                  label: Text(s.isCompleted ? "Mark as Not Completed" : "Mark Completed"),
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(

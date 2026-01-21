@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/sessions.provide.dart';
 import 'screens/sessions_home_screen.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,14 +15,17 @@ class StudyPlannerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Study Planner',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.indigo,
+    return ChangeNotifierProvider(
+      create: (_) => SessionsProvider(),
+      child: MaterialApp(
+        title: 'Study Planner',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: Colors.indigo,
+        ),
+        home: const SessionsHomeScreen(),
       ),
-      home: const SessionsHomeScreen(),
     );
   }
 }

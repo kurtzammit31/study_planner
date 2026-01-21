@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/sessions.provide.dart';
+
 
 class AddSessionScreen extends StatefulWidget {
   const AddSessionScreen({super.key});
@@ -13,6 +16,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   final _titleCtrl = TextEditingController();
   final _subjectCtrl = TextEditingController();
   final _durationCtrl = TextEditingController(text: "60");
+  final _notesCtrl = TextEditingController();
 
   DateTime _selectedDateTime = DateTime.now().add(const Duration(hours: 1));
   bool _reminderEnabled = true;
@@ -22,6 +26,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
     _titleCtrl.dispose();
     _subjectCtrl.dispose();
     _durationCtrl.dispose();
+    _notesCtrl.dispose();
     super.dispose();
   }
 
@@ -46,15 +51,22 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   }
 
   void _save() {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    // Step 3: push to Provider + Hive and schedule notification
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Session saved (dummy for now)")),
-    );
+  final duration = int.parse(_durationCtrl.text.trim());
 
-    Navigator.of(context).pop();
-  }
+  context.read<SessionsProvider>().addSession(
+        title: _titleCtrl.text.trim(),
+        subject: _subjectCtrl.text.trim(),
+        dateTime: _selectedDateTime,
+        durationMinutes: duration,
+        notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+        reminderEnabled: _reminderEnabled,
+      );
+
+  Navigator.of(context).pop();
+}
+
 
   @override
   Widget build(BuildContext context) {
