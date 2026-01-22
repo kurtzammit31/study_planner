@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
+import '../services/notification_service.dart';
+
 
 import '../models/study_session.dart';
 
@@ -9,6 +11,7 @@ class SessionsProvider extends ChangeNotifier {
 
   SessionsProvider() {
     _loadSessions();
+    _ensureNotifIds();
   }
 
   List<StudySession> _sessions = [];
@@ -24,6 +27,18 @@ class SessionsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _ensureNotifIds() {
+  bool changed = false;
+  for (final s in _sessions) {
+    if (s.notifId == null) {
+      s.notifId = Random().nextInt(100000000);
+      _box.put(s.id, s);
+      changed = true;
+    }
+  }
+  if (changed) notifyListeners();
+}
+
   StudySession getById(String id) {
     return _sessions.firstWhere((s) => s.id == id);
   }
@@ -38,6 +53,8 @@ class SessionsProvider extends ChangeNotifier {
   }) {
     final id = "s${Random().nextInt(999999)}";
 
+    final notifId = Random().nextInt(100000000);
+
     final session = StudySession(
       id: id,
       title: title,
@@ -46,10 +63,19 @@ class SessionsProvider extends ChangeNotifier {
       durationMinutes: durationMinutes,
       notes: notes,
       reminderEnabled: reminderEnabled,
+      notifId: notifId,
     );
 
     _sessions.add(session);
     _box.put(id, session);
+
+    if (reminderEnabled) {
+      NotificationService.instance.scheduleSessionReminder(
+        id: notifId,
+        title: "$subject - $title",
+        dateTime: dateTime,
+      );
+    }
 
     notifyListeners();
   }

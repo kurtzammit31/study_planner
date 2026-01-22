@@ -31,15 +31,20 @@ class StudySession {
   @HiveField(8)
   String? imagePath;
 
+  @HiveField(9)
+  int? notifId;
+
   StudySession({
     required this.id,
     required this.title,
     required this.subject,
     required this.dateTime,
     required this.durationMinutes,
+    
     this.notes,
     this.isCompleted = false,
     this.reminderEnabled = true,
     this.imagePath,
+    this.notifId,
   });
 }

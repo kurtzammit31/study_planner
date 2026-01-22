@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'services/notification_service.dart';
 
 import 'models/study_session.dart';
 import 'providers/sessions.provide.dart';
@@ -12,6 +13,8 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(StudySessionAdapter());
   await Hive.openBox<StudySession>('sessions');
+
+  await NotificationService.instance.init();
 
   runApp(const StudyPlannerApp());
 }

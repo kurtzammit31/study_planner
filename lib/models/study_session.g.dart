@@ -26,13 +26,14 @@ class StudySessionAdapter extends TypeAdapter<StudySession> {
       isCompleted: fields[6] as bool,
       reminderEnabled: fields[7] as bool,
       imagePath: fields[8] as String?,
+      notifId: fields[9] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, StudySession obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class StudySessionAdapter extends TypeAdapter<StudySession> {
       ..writeByte(7)
       ..write(obj.reminderEnabled)
       ..writeByte(8)
-      ..write(obj.imagePath);
+      ..write(obj.imagePath)
+      ..writeByte(9)
+      ..write(obj.notifId);
   }
 
   @override
