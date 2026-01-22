@@ -1,23 +1,27 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+
 import '../models/study_session.dart';
 
 class SessionsProvider extends ChangeNotifier {
-  final List<StudySession> _sessions = [
-    StudySession(
-      id: "s1",
-      title: "Database Revision",
-      subject: "Databases",
-      dateTime: DateTime.now().add(const Duration(hours: 2)),
-      durationMinutes: 60,
-      notes: "Cover ERD + queries",
-    ),
-  ];
+  final Box<StudySession> _box = Hive.box<StudySession>('sessions');
+
+  SessionsProvider() {
+    _loadSessions();
+  }
+
+  List<StudySession> _sessions = [];
 
   List<StudySession> get sessions {
     final copy = [..._sessions];
     copy.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     return copy;
+  }
+
+  void _loadSessions() {
+    _sessions = _box.values.toList();
+    notifyListeners();
   }
 
   StudySession getById(String id) {
@@ -33,29 +37,34 @@ class SessionsProvider extends ChangeNotifier {
     bool reminderEnabled = true,
   }) {
     final id = "s${Random().nextInt(999999)}";
-    _sessions.add(
-      StudySession(
-        id: id,
-        title: title,
-        subject: subject,
-        dateTime: dateTime,
-        durationMinutes: durationMinutes,
-        notes: notes,
-        reminderEnabled: reminderEnabled,
-      ),
+
+    final session = StudySession(
+      id: id,
+      title: title,
+      subject: subject,
+      dateTime: dateTime,
+      durationMinutes: durationMinutes,
+      notes: notes,
+      reminderEnabled: reminderEnabled,
     );
+
+    _sessions.add(session);
+    _box.put(id, session);
+
     notifyListeners();
   }
 
   void toggleCompleted(String id) {
     final s = getById(id);
     s.isCompleted = !s.isCompleted;
+    _box.put(s.id, s);
     notifyListeners();
   }
 
   void setImagePath(String id, String path) {
     final s = getById(id);
     s.imagePath = path;
+    _box.put(s.id, s);
     notifyListeners();
   }
 }
