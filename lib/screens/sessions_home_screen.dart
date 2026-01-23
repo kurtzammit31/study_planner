@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/notification_service.dart';
 
 import '../providers/sessions.provide.dart';
 import 'add_session_screen.dart';

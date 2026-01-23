@@ -1,74 +1,59 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 import 'dart:io';
-
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
   NotificationService._();
-  static final NotificationService instance = NotificationService._();
+  static final instance = NotificationService._();
 
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    tz.initializeTimeZones();
-
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidInit);
 
     await _plugin.initialize(initSettings);
 
-    
-  final android = _plugin.resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>();
+    if (Platform.isAndroid) {
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
 
-  await android?.createNotificationChannel(
-    const AndroidNotificationChannel(
-      'study_reminders',
-      'Study Reminders',
-      description: 'Notifications for scheduled study sessions',
-      importance: Importance.max,
-    ),
-  );
+      // Create channel (important for Android 8+)
+      await android?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'study_reminders',
+          'Study Reminders',
+          description: 'Local notifications for study sessions',
+          importance: Importance.max,
+        ),
+      );
 
-  await android?.requestNotificationsPermission();
-}
-
-  Future<void> scheduleSessionReminder({
-    required int id,
-    required String title,
-    required DateTime dateTime,
-  }) async {
-    if (!Platform.isAndroid) return; // <-- add this
-
-    if (dateTime.isBefore(DateTime.now())) return;
-
-    const androidDetails = AndroidNotificationDetails(
-      'study_reminders',
-      'Study Reminders',
-      channelDescription: 'Notifications for scheduled study sessions',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-
-    const details = NotificationDetails(android: androidDetails);
-
-    await _plugin.zonedSchedule(
-      id,
-      'Study Reminder',
-      title,
-      tz.TZDateTime.from(dateTime, tz.local),
-      details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: null,
-    );
+      // Android 13+ permission
+      await android?.requestNotificationsPermission();
+    }
   }
 
+  NotificationDetails _details() {
+    const android = AndroidNotificationDetails(
+      'study_reminders',
+      'Study Reminders',
+      channelDescription: 'Local notifications for study sessions',
+      importance: Importance.max,
+      priority: Priority.max,
+    );
+    return const NotificationDetails(android: android);
+  }
 
+  Future<void> showSessionCreated({
+    required String subject,
+    required String title,
+  }) async {
+    if (!Platform.isAndroid) return;
 
-  Future<void> cancelReminder(int id) async {
-    await _plugin.cancel(id);
+    await _plugin.show(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000, // unique id
+      'Session added ✅',
+      '$subject • $title',
+      _details(),
+    );
   }
 }
