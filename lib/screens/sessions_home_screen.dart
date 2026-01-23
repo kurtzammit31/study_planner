@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../services/notification_service.dart';
 
 import '../providers/sessions.provide.dart';
 import 'add_session_screen.dart';
@@ -14,7 +15,11 @@ class SessionsHomeScreen extends StatelessWidget {
     final sessions = provider.sessions;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Study Planner')),
+      appBar: AppBar(
+        title: const Text('Study Planner'),
+        
+      ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
@@ -23,6 +28,7 @@ class SessionsHomeScreen extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
+
       body: ListView.builder(
         padding: const EdgeInsets.all(12),
         itemCount: sessions.length,

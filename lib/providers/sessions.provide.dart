@@ -70,13 +70,19 @@ class SessionsProvider extends ChangeNotifier {
     _box.put(id, session);
 
     if (reminderEnabled) {
+      print(
+        "DEBUG: scheduling notification | "
+        "notifId=$notifId | "
+        "dateTime=$dateTime | "
+        "now=${DateTime.now()}"
+      );
+
       NotificationService.instance.scheduleSessionReminder(
         id: notifId,
         title: "$subject - $title",
         dateTime: dateTime,
       );
     }
-
     notifyListeners();
   }
 

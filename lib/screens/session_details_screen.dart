@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 
+import 'camera_capture_screen.dart';
 import '../providers/sessions.provide.dart';
 
 class SessionDetailsScreen extends StatelessWidget {
@@ -33,6 +35,18 @@ class SessionDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text("Notes: ${s.notes}"),
                 ],
+                if (s.imagePath != null) ...[
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        File(s.imagePath!),
+                        height: 180,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                ],
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: () => provider.toggleCompleted(sessionId),
@@ -41,14 +55,19 @@ class SessionDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
-                  onPressed: () {
-                    // Step 5: camera capture + attach photo
+                  onPressed: () async {
+                    final path = await Navigator.of(context).push<String>(
+                       MaterialPageRoute(builder: (_) => const CameraCaptureScreen()),
+                      );
+                    
+                    if (path == null) return;
+                    
+                    provider.setImagePath(sessionId, path);
+                    
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Camera feature coming soon")),
+                      const SnackBar(content: Text("Photo added to session.")),
                     );
-                  },
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text("Attach Notes Photo"),
+                  }, label: const Text("Add Notes Photo"), 
                 ),
               ],
             ),

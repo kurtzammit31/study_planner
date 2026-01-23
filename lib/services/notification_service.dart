@@ -18,11 +18,21 @@ class NotificationService {
 
     await _plugin.initialize(initSettings);
 
-    // Android 13+ permission request
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
-    await android?.requestNotificationsPermission();
-  }
+    
+  final android = _plugin.resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>();
+
+  await android?.createNotificationChannel(
+    const AndroidNotificationChannel(
+      'study_reminders',
+      'Study Reminders',
+      description: 'Notifications for scheduled study sessions',
+      importance: Importance.max,
+    ),
+  );
+
+  await android?.requestNotificationsPermission();
+}
 
   Future<void> scheduleSessionReminder({
     required int id,
@@ -49,12 +59,14 @@ class NotificationService {
       title,
       tz.TZDateTime.from(dateTime, tz.local),
       details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: null,
     );
   }
+
+
 
   Future<void> cancelReminder(int id) async {
     await _plugin.cancel(id);
