@@ -51,7 +51,7 @@ class NotificationService {
 
     await _plugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000, // unique id
-      'Session added ✅',
+      'Session added',
       '$subject • $title',
       _details(),
     );

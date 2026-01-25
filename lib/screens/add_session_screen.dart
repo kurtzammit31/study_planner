@@ -71,7 +71,12 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Study Session")),
+      backgroundColor: Colors.blue.shade50,
+      appBar: AppBar(
+        title: const Text("Add Study Session"),
+        titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      backgroundColor: Colors.indigo[700],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -109,12 +114,6 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                   onPressed: _pickDateTime,
                   child: const Text("Pick"),
                 ),
-              ),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text("Schedule reminder"),
-                value: _reminderEnabled,
-                onChanged: (v) => setState(() => _reminderEnabled = v),
               ),
               const SizedBox(height: 16),
               FilledButton(

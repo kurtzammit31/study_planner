@@ -16,7 +16,12 @@ class SessionDetailsScreen extends StatelessWidget {
     final s = provider.getById(sessionId);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Session Details")),
+      backgroundColor: Colors.blue.shade50,
+      appBar: AppBar(
+        title: const Text("Session Details"),
+        titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      backgroundColor: Colors.indigo[700],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Card(

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import '../services/notification_service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 
 import '../models/study_session.dart';
@@ -75,14 +76,37 @@ class SessionsProvider extends ChangeNotifier {
       title: title,
       );
     }
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'session_added',
+      parameters: {
+        'subject': session.subject,
+        'has_notes': session.notes != null && session.notes!.isNotEmpty,
+        'reminder_enabled': session.reminderEnabled,
+      },
+    );
     notifyListeners();
   }
 
+  void deleteSession(String id) {
+  _sessions.removeWhere((s) => s.id == id); 
+  _box.delete(id);                          
+  notifyListeners();
+}
 
   void toggleCompleted(String id) {
     final s = getById(id);
     s.isCompleted = !s.isCompleted;
     _box.put(s.id, s);
+
+    FirebaseAnalytics.instance.logEvent(
+      name: 'session_toggled_completed',
+      parameters: {
+        'subject': s.subject,
+        'is_completed': s.isCompleted,
+      },
+    );
+
     notifyListeners();
   }
 

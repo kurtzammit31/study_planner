@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class CameraCaptureScreen extends StatefulWidget {
   const CameraCaptureScreen({super.key});
@@ -59,7 +60,13 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen> {
     try {
       final file = await _controller!.takePicture();
       if (!mounted) return;
-      Navigator.of(context).pop(file.path); // return path to previous screen
+      FirebaseAnalytics.instance.logEvent(
+        name: 'photo_attached',
+        parameters: {
+        'source': 'camera',
+        },
+      );
+      Navigator.of(context).pop(file.path);// return path to previous screen   
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to take photo: $e")),

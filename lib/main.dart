@@ -7,8 +7,14 @@ import 'models/study_session.dart';
 import 'providers/sessions.provide.dart';
 import 'screens/sessions_home_screen.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
 
   await Hive.initFlutter();
   Hive.registerAdapter(StudySessionAdapter());
@@ -27,6 +33,9 @@ class StudyPlannerApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => SessionsProvider(),
       child: MaterialApp(
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+        ],
         title: 'Study Planner',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
