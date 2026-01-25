@@ -68,6 +68,7 @@ class SessionDetailsScreen extends StatelessWidget {
                     if (path == null) return;
                     
                     provider.setImagePath(sessionId, path);
+                    if (!context.mounted) return;
                     
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Photo added to session.")),

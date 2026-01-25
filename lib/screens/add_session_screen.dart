@@ -19,7 +19,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
   final _notesCtrl = TextEditingController();
 
   DateTime _selectedDateTime = DateTime.now().add(const Duration(hours: 1));
-  bool _reminderEnabled = true;
+  final bool _reminderEnabled = true;
 
   @override
   void dispose() {
@@ -36,19 +36,25 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
       initialDate: _selectedDateTime,
-    );
-    if (date == null) return;
+   );
+
+  
+    if (!mounted || date == null) return;
 
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
-    );
-    if (time == null) return;
+   );
+
+  
+    if (!mounted || time == null) return;
 
     setState(() {
-      _selectedDateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      _selectedDateTime =
+          DateTime(date.year, date.month, date.day, time.hour, time.minute);
     });
   }
+
 
   void _save() {
   if (!_formKey.currentState!.validate()) return;
